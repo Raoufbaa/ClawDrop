@@ -4,10 +4,11 @@ services:
     name: peerjs-server
     env: node
     plan: free
-    region: frankfurt
+    region: frankfurt   # nearest EU region
     branch: main
     buildCommand: npm install
     startCommand: node server.js
     envVars:
       - key: PEERJS_PATH
-        value: '/ClawDrop'
+        value: "/ClawDrop"
+      # No PEERJS_PORT here; server.js will pick up Render's $PORT
