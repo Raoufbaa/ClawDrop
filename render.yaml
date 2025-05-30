@@ -1,0 +1,13 @@
+# render.yaml
+services:
+  - type: web
+    name: peerjs-server
+    env: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PEERJS_PATH
+        value: '/ClawDrop'
