@@ -1,14 +1,15 @@
 # render.yaml
 services:
   - type: web
-    name: peerjs-server
+    name: websocket-relay
     env: node
     plan: free
-    region: frankfurt   # nearest EU region
+    region: frankfurt      # closest EU region
     branch: main
     buildCommand: npm install
     startCommand: node server.js
     envVars:
-      - key: PEERJS_PATH
-        value: "/ClawDrop"
-      # No PEERJS_PORT here; server.js will pick up Render's $PORT
+      # If you want a fixed local port for testing, you can define:
+      # - key: PEERJS_PORT
+      #   value: "28175"
+      # Otherwise, leave it blank and rely on Render’s $PORT.
