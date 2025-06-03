@@ -1,15 +1,27 @@
 # render.yaml
 services:
   - type: web
-    name: websocket-relay
+    name: webrtc-signaling-server
     env: node
     plan: free
-    region: frankfurt      # closest EU region
+    region: frankfurt
     branch: main
     buildCommand: npm install
-    startCommand: node server.js
+    startCommand: node enhanced-relay-server.js
     envVars:
-      # If you want a fixed local port for testing, you can define:
-      # - key: PEERJS_PORT
-      #   value: "28175"
-      # Otherwise, leave it blank and rely on Render’s $PORT.
+      - key: SERVER_IP
+        value: 'peerjs-server-sv20.onrender.com'
+      - key: NODE_ENV
+        value: 'production'
+
+  - type: web
+    name: turn-server
+    env: node
+    plan: starter # TURN servers need more resources
+    region: frankfurt
+    branch: main
+    buildCommand: npm install
+    startCommand: node turn-server.js
+    envVars:
+      - key: NODE_ENV
+        value: 'production'
