@@ -67,11 +67,12 @@ wss.on('connection', (ws, req) => {
     joinedCode = code;
     joinChannel(ws, code);
 
-    // Send TURN server info
+    // Send TURN server info and own clientId
     ws.send(
       JSON.stringify({
         type: 'turn-info',
         turnServers: getTurnServerConfig(),
+        peerId: ws.clientId,
       })
     );
   }
@@ -79,9 +80,7 @@ wss.on('connection', (ws, req) => {
   function handleSignal(ws, message) {
     const { targetId, signal } = message;
     if (joinedCode && channels[joinedCode]) {
-      const targetClient = channels[joinedCode].find(
-        (client) => client.clientId === targetId || client === ws
-      );
+      const targetClient = channels[joinedCode].find((client) => client.clientId === targetId);
 
       if (targetClient && targetClient !== ws) {
         targetClient.send(
@@ -201,7 +200,7 @@ app.get('/', (req, res) => {
   res.json({
     status: 'WebRTC Signaling Server Active',
     channels: Object.keys(channels).length,
-    connections: Array.from(channels).reduce((total, [_, clients]) => total + clients.length, 0),
+    connections: Object.values(channels).reduce((total, clients) => total + clients.length, 0),
   });
 });
 
@@ -209,15 +208,14 @@ app.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
-// Add the ClawDrop endpoint that your .env file expects
 app.get('/ClawDrop', (req, res) => {
   res.json({
     status: 'WebRTC Signaling Server - ClawDrop Endpoint',
     message: 'This is the ClawDrop signaling server endpoint',
     websocket_url: `ws://${req.get('host')}/ws`,
     channels: Object.keys(channels).length,
-    active_connections: Array.from(channels).reduce(
-      (total, [_, clients]) => total + clients.length,
+    active_connections: Object.values(channels).reduce(
+      (total, clients) => total + clients.length,
       0
     ),
     turn_servers: getTurnServerConfig(),
